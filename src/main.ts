@@ -3,9 +3,10 @@ import { AppModule } from "./module";
 import express from "express";
 
 declare global {
-  namespace express {
+  namespace Express {
     interface Req {
       currentUser?: JwtPayload;
+      uploaderError?: Error;
     }
   }
 }

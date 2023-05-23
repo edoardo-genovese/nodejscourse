@@ -7,8 +7,9 @@ import { json, urlencoded } from "body-parser";
 import cors from "cors";
 import cookieSession from "cookie-session";
 import mongoose from "mongoose";
-import { errorHandler } from "@nodetrainingcourses/common";
+import { currentUser, errorHandler } from "@nodetrainingcourses/common";
 import { authRouters } from "./auth/auth.routers";
+import { sellerRouter } from "./seller/seller.routers";
 
 export class AppModule {
   constructor(public app: Application) {
@@ -29,9 +30,6 @@ export class AppModule {
         secure: false,
       })
     );
-    app.use(authRouters);
-
-    app.use(errorHandler);
 
     Object.setPrototypeOf(this, AppModule.prototype);
   }
@@ -46,6 +44,14 @@ export class AppModule {
     } catch (err) {
       throw new Error("database error");
     }
+
+    this.app.use(currentUser(process.env.JWT_KEY!)); //in start function we are sure to hae the jwt token
+
+    this.app.use(authRouters);
+
+    this.app.use(sellerRouter);
+
+    this.app.use(errorHandler);
 
     this.app.listen(3000, () => console.log("Ok port: 3000"));
   }
